@@ -12,6 +12,7 @@
     , "mongoose-types":">=0.0.1"
     , "resque":">=0.0.1"
     , "express-resource":">=0.0.1"
+    , "cli":">=0.0.1"
     , "ntwitter":">0.0.1"
   }
 }
