@@ -5,9 +5,7 @@ var memeGenClient = new MemeGenClient(conf.memegenerator);
 var memeItEsParams = {
     hosts:[
         {
-            host:'ec2-107-22-152-181.compute-1.amazonaws.com',
-            port:9200,
-            secure:false
+
         }
     ]
 }
