@@ -1,0 +1,17 @@
+{
+    "name": "application-name"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "express": "2.5.8"
+    , "jade": ">= 0.0.1"
+    , "elasticsearchclient":">=0.0.1"
+    , "memegenclient":">=0.0.1"
+    , "memeitclient":">=0.0.1"
+    , "mongoose":">=0.0.1"
+    , "mongoose-types":">=0.0.1"
+    , "resque":">=0.0.1"
+    , "express-resource":">=0.0.1"
+    , "ntwitter":">0.0.1"
+  }
+}
