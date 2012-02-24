@@ -6,6 +6,8 @@ var express = require('express')
 var Resource = require('express-resource')
 var mongoose = require('mongoose');
 var cli = require('cli').enable('status');
+var TwitterStreamFilter = require('./lib/twitterStreamFilter')
+var schedule = require('node-schedule');
 //, routes = require('./routes');
 
 //Cli provides for starting the app with command line options
@@ -40,7 +42,6 @@ cli.main(function (args, options) {
     }
 
 
-
     // Configuration
     app.configure(function () {
         app.set('views', __dirname + '/views');
@@ -63,12 +64,39 @@ cli.main(function (args, options) {
         app.use(express.errorHandler());
     });
 
+    //set up the stream filter
+    GLOBAL.twitterStreamFilter = new TwitterStreamFilter(app)
+    GLOBAL.streamReInitPending = false
+    GLOBAL.reinitStreams = function (callback) {
+        twitterStreamFilter.clearStreams(function (err, results) {
+            var self =this
+            models.streams.getDistinctTerms(function (err, results) {
+                if (err) {
+                    callback(err)
+                } else {
+                    twitterStreamFilter.intitializeStream(results, function () {
+                        if(typeof callback == 'function')
+                            callback(undefined, true)
+                    })
+                }
+            })
+        })
+    }
 
-
+    var j = schedule.scheduleJob('*/1 * * * *', function () {
+        if (streamReInitPending) {
+            console.log('stream init pending.')
+            reinitStreams()
+        } else {
+            console.log('No stream init pending.')
+        }
+    });
 
     //Wire up the resources for rest.
+    //Probably should add some auth...
     var twitStreams = require('./resources/twitStreams')
     var twitStreamsResource = app.resource('streams', twitStreams, { load:twitStreams.load });
+    twitStreamsResource.map('post', '/init', twitStreams.init);    // relative path accesses element (/users/1/login)
 
     // Routes
 

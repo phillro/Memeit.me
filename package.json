@@ -15,5 +15,6 @@
     , "cli":">=0.0.1"
     , "connect-redis":">=0.0.1"
     , "ntwitter":">0.0.1"
+    , "node-schedule":">0.0.1"
   }
 }

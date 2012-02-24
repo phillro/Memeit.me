@@ -1,9 +1,21 @@
 exports.index = function (req, res) {
-    res.send('stream index');
+    models.streams.getDistinctTerms(function (err, results) {
+        if (err) {
+            res.send(err)
+        } else {
+            res.send(results);
+        }
+    })
 };
 
 exports.new = function (req, res) {
-    res.send('new stream');
+    reinitStreams(function(err,result){
+        if(err)
+            res.send({success:false, result:err})
+        else{
+            res.send({success:true, result:'intialized streams'})
+        }
+    })
 };
 
 //Create a new stream from a post. Body includes JSON for the stream object
@@ -13,37 +25,58 @@ exports.create = function (req, res) {
         streamObj = JSON.parse(streamObj)
     }
     var streamModel = new models.streams(streamObj)
-    streamModel.save(function (err, result) {
-        if (err) {
-            res.send({success:false})
-            console.log(err)
-        }
-        if (result) {
-            res.send({success:true,result:result})
-        }
+    //get the distinct terms so we can check if there are any new terms to add to a stream
+    models.streams.getDistinctTerms(function (err, distinctTerms) {
+        streamModel.save(function (err, result) {
+            if (err) {
+                res.send({success:false})
+                console.log(err)
+            }
+            if (result) {
+                //Check for existing terms, add new ones
+                var termsAdded = false
+                if (distinctTerms) {
+                    for (var i = 0; i < streamModel.terms.length; i++) {
+                        if (distinctTerms.indexOf(streamModel.terms[i]) == -1) {
+                            termsAdded = true
+                        }
+                    }
+                    if (termsAdded)
+                        streamReInitPending = true
+                    res.send({success:true, result:{msg:'Stream created.', id:result}})
+                }
+
+
+            }
+        })
 
     })
 };
 
 exports.show = function (req, res) {
-    res.send('show stream ' + req.params.stream);
+    res.send(req.stream);
 };
 
 exports.edit = function (req, res) {
-    res.send('edit stream ' + req.params.stream);
+    res.send(req.stream);
 };
 
 exports.update = function (req, res) {
-    res.send('update stream ' + req.params.stream);
+    res.send(req.stream);
 };
 
 exports.destroy = function (req, res) {
-    res.send('destroy stream ' + req.params.stream);
+    res.send(req.stream);
 };
 
 
-//Auto load the resources object
+//Auto load the resource object by id.
 exports.load = function (req, id, fn) {
-    //tbd make this load a models/streams.js
-    fn(null, {id:1, name:'my Stream'})
+    models.streams.findById(id, function (err, stream) {
+        if (err)
+            fn(err)
+        else
+            fn(err, stream)
+    })
+
 }
