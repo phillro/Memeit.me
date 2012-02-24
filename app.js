@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 var cli = require('cli').enable('status');
 //, routes = require('./routes');
 
+//Cli provides for starting the app with command line options
 cli.parse({
     env:['e', 'Environment [dev|prod]', 'string', 'dev'],
 });
@@ -16,6 +17,7 @@ cli.main(function (args, options) {
     var app = module.exports = express.createServer();
     var conf = {}
     if (options.env) {
+        //default to development configuration
         conf = require('./etc/conf').development
         if (options.env == 'dev') {
             app.settings.env = 'development'
@@ -28,6 +30,7 @@ cli.main(function (args, options) {
     app.configSettings = conf
 
 
+    //Set up the mongodb connection and models
     var memeitDbConnectionString = 'mongodb://' + app.configSettings.mongo.user + ':' + app.configSettings.mongo.password + '@' + app.configSettings.mongo.host + ':' + app.configSettings.mongo.port + '/' + app.configSettings.mongo.dbName
     var memeItDb = mongoose.createConnection(memeitDbConnectionString);
     var streamSchema = require('./models/streams')
@@ -38,8 +41,7 @@ cli.main(function (args, options) {
 
 
 
-// Configuration
-
+    // Configuration
     app.configure(function () {
         app.set('views', __dirname + '/views');
         app.set('view engine', 'jade');
@@ -61,15 +63,14 @@ cli.main(function (args, options) {
         app.use(express.errorHandler());
     });
 
-// Routes
 
-//app.get('/', routes.index);
+
+
+    //Wire up the resources for rest.
     var twitStreams = require('./resources/twitStreams')
-
     var twitStreamsResource = app.resource('streams', twitStreams, { load:twitStreams.load });
-//locationResource.map('get', 'related', location.related);    // relative path accesses element (/users/1/login)
-//locationResource.map('post', 'score', location.score);    // relative path accesses element (/users/1/login)
-//locationResource.map('post', '/suggest', location.suggest);    // relative path acce
+
+    // Routes
 
     app.listen(3000);
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
