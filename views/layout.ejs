@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-      <script src="/javascripts/jquery-1.7.min.js" type="text/javascript" charset="utf-8"></script>"
-      <script src="/javascripts/jquery-socket-event-handler.js" type="text/javascript" charset="utf-8"></script>
-  </head>
-  <body>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <script src="/javascripts/jquery-1.7.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/jquery-socket-event-handler.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/jquery-meme-streams.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+<%- body %>
 <script>
-    $(document).socketEventHandler({host:'<%=app.configSettings.baseUrl%>:<%=app.configSettings.socketPort%>/'})
+    $(document).ready(function(){
+
+
+    })
+
 </script>
-  </body>
+
+
+</body>
 </html>

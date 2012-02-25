@@ -1,14 +1,17 @@
 /**
  * Module dependencies.
  */
-
+var connect = require('connect')
+var RedisStore = require('connect-redis')(connect);
 var express = require('express')
 var Resource = require('express-resource')
 var mongoose = require('mongoose');
 var cli = require('cli').enable('status');
 var TwitterStreamFilter = require('./lib/twitterStreamFilter')
 var schedule = require('node-schedule');
-//, routes = require('./routes');
+var SocketHandler = require('./lib/socketHandler.js');
+var routes = require('./routes');
+
 
 //Cli provides for starting the app with command line options
 cli.parse({
@@ -29,7 +32,9 @@ cli.main(function (args, options) {
             conf = require('./etc/conf').production
         }
     }
-    app.configSettings = conf
+    GLOBAL.configSettings = app.configSettings = conf
+
+    app.sessionStore = sessionStore = new RedisStore(app.configSettings.redis);
 
 
     //Set up the mongodb connection and models
@@ -45,11 +50,12 @@ cli.main(function (args, options) {
     // Configuration
     app.configure(function () {
         app.set('views', __dirname + '/views');
-        app.set('view engine', 'jade');
+        app.set('view engine', 'ejs');
         app.use(express.bodyParser());
         var RedisStore = require('connect-redis')(express);
         app.use(express.cookieParser());
-        app.use(express.session({ secret:"keyboard cat", store:new RedisStore }));
+        //app.use(express.session({ secret:"keyboard cat", store:new RedisStore }));
+        app.use(express.session({store:sessionStore, secret:app.configSettings.sessionSecret }));
         app.use(express.methodOverride());
         app.use(app.router);
         app.use(express.static(__dirname + '/public'));
@@ -69,13 +75,13 @@ cli.main(function (args, options) {
     GLOBAL.streamReInitPending = false
     GLOBAL.reinitStreams = function (callback) {
         twitterStreamFilter.clearStreams(function (err, results) {
-            var self =this
+            var self = this
             models.streams.getDistinctTerms(function (err, results) {
                 if (err) {
                     callback(err)
                 } else {
                     twitterStreamFilter.intitializeStream(results, function () {
-                        if(typeof callback == 'function')
+                        if (typeof callback == 'function')
                             callback(undefined, true)
                     })
                 }
@@ -99,6 +105,15 @@ cli.main(function (args, options) {
     twitStreamsResource.map('post', '/init', twitStreams.init);    // relative path accesses element (/users/1/login)
 
     // Routes
+    var socketHandler = new SocketHandler(app)
+
+    socketHandler.listen(options, function (socketHandler) {
+        GLOBAL.socketHandler = app.socketHandler = socketHandler
+         require('./sockets/streamSocket')(app)
+
+
+    });
+    app.get('/', routes.index);
 
     app.listen(3000);
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

@@ -1,2 +1,24 @@
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
+        <a href="#" id="test_socket">test</a>
+<ul id="stream_list">
+</ul>
+
+<script>
+    $(document).ready(function(){
+        $(document).socketEventHandler({host:'<%=app.configSettings.baseUrl%>:<%=app.configSettings.socketPort%>/'})
+        $(document).bind('addTweet', function (event, data) {
+            $("#stream_list").append('<li>test</li>');
+        })
+        $('#stream_list').memeStreams('followStream', {streamId:1,options:{}});
+
+    })
+
+    $('#test_socket').click(function(){
+        $('#stream_list').memeStreams('testSocket', {streamId:1,options:{}});
+    })
+
+
+
+
+</script>

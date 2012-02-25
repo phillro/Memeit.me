@@ -1,4 +1,6 @@
 exports.index = function (req, res) {
+
+
     models.streams.getDistinctTerms(function (err, results) {
         if (err) {
             res.send(err)
@@ -54,7 +56,8 @@ exports.create = function (req, res) {
 };
 
 exports.show = function (req, res) {
-    res.send(req.stream);
+    app.socketHandler.emit('eventMsg', getMoreCompleteEventData)
+
 };
 
 exports.edit = function (req, res) {
