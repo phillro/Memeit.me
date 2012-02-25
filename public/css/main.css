@@ -1,0 +1,33 @@
+body {
+  text-align:center;
+}
+
+#container {
+  width: 800px;
+  background-color:green;
+  display:inline-block;
+}
+
+.tweet img {
+  width:675px;
+}
+
+.item {
+  padding:10px;
+  margin:5px;
+  float:left;
+  background-color:red;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  font-family: 'Signika Negative', sans-serif;
+  font-size: 18px;
+}
+
+.thumb {
+  width:75px;
+  height:75px;
+  background-color:yellow;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  margin:5px;
+}
