@@ -4,7 +4,12 @@
  */
 
 exports.index = function(req, res){
-  res.render('index',{title:'Trollme.me'})
+    models.streams.find({},function(err,results){
+        if(!results)
+            results=[]
+        res.render('index',{title:'Trollme.me',streams:results})
+    })
+
 };
 
 

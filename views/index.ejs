@@ -1,22 +1,46 @@
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
-        <a href="#" id="test_socket">test</a>
-<ul id="stream_list">
-</ul>
+        <div>
+            <div style="float:left">
+                <ul id="streams_list">
+                    <% for(var i=0;i<streams.length;i++){ %>
+                        <li>
+                            <a href="#" class="stream_link" id="<%= streams[i]._id%>">
+                                <% for(var t=0;t<streams[i].terms.length;t++){ %>
+                                    <%=streams[i].terms[t]%>,
+                                <% } %>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div>
+                <h3 id="stream_title"></h3>
+                <ul id="stream_content">
+                </ul>
+            </div>
+        </div>
 
 <script>
     $(document).ready(function(){
         $(document).socketEventHandler({host:'<%=app.configSettings.baseUrl%>:<%=app.configSettings.socketPort%>/'})
         $(document).bind('addTweet', function (event, data) {
-            $("#stream_list").append('<li>test</li>');
+            if(data.msg){
+                if(typeof data.msg=='string'){
+                    data.msg=JSON.parse(data.msg)
+                }
+            }
+            $("#stream_content").append('<li>'+data.msg.text+'</li>');
         })
-        $('#stream_list').memeStreams('followStream', {streamId:1,options:{}});
 
     })
 
-    $('#test_socket').click(function(){
-        $('#stream_list').memeStreams('testSocket', {streamId:1,options:{}});
+    $('.stream_link').click(function(ev){
+        $("#stream_content").empty();
+        $('#stream_content').memeStreams('followStream', {streamId:this.id,options:{}});
+        $('#stream_title').text('Viewing Stream : '+$('#'+this.id).text())
     })
+
 
 
 

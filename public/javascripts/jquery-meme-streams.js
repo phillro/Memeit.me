@@ -3,19 +3,10 @@
 
     var methods = {
         followStream:function (params) {
-            var params = {
-                streamId:'test',
-                options:{}
-            }
-
             $(document).socketEventHandler('_trigger', {ns:'streams', event:'followStream', data:{streamId:params.streamId, options:params.options}});
         },
 
         loadStreamHistory:function (streamId, options) {
-            var params = {
-                streamId:'test',
-                options:{}
-            }
             $(document).socketEventHandler('_trigger', {ns:'streams', event:'loadStreamHistory', data:{streamId:params.streamId, options:params.options}});
         },
         testSocket : function(){
