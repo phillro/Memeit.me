@@ -16,6 +16,9 @@ memeWorker.makeMeme = function (tweet) {
             console.log(data);
             if(typeof data == 'string')
                 data=JSON.parse(data)
+
+            resque.enqueue('troll_factory','publishMessage',data)
+
             resque.enqueue('troll_factory','trollReply',{originalTweet:tweet,meme:data})
         })
         .exec()

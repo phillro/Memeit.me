@@ -3,6 +3,7 @@
  */
 var connect = require('connect')
 var RedisStore = require('connect-redis')(connect);
+var redis = require("redis")
 var express = require('express')
 var Resource = require('express-resource')
 var mongoose = require('mongoose');
@@ -35,7 +36,8 @@ cli.main(function (args, options) {
     GLOBAL.configSettings = app.configSettings = conf
 
     app.sessionStore = sessionStore = new RedisStore(app.configSettings.redis);
-
+    GLOBAL.redisClient = new redis.createClient(configSettings.redis.port, configSettings.redis.host);
+    GLOBAL.resque = new require ("resque").connect (configSettings.redis)
 
     //Set up the mongodb connection and models
     var memeitDbConnectionString = 'mongodb://' + app.configSettings.mongo.user + ':' + app.configSettings.mongo.password + '@' + app.configSettings.mongo.host + ':' + app.configSettings.mongo.port + '/' + app.configSettings.mongo.dbName
@@ -97,6 +99,18 @@ cli.main(function (args, options) {
             console.log('No stream init pending.')
         }
     });
+
+
+    //Start up the workers
+    //Creates a meme image by searching memegenerator.net a
+    var memeGeneratorFactoryWorker = resque.createWorker ('memegenerator_factory','createMemeGeneratorMeme',require('./lib/workers/memeGeneratorWorker') )
+    memeGeneratorFactoryWorker.start()
+
+    // trollFactoryWorker publishes finished messages to stream channels
+    var trollFactoryWorker = resque.createWorker ('troll_factory','publishMessage',require('./lib/workers/trollStreamWorker') )
+    trollFactoryWorker.start()
+
+
 
     //Wire up the resources for rest.
     //Probably should add some auth...
