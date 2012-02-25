@@ -118,6 +118,10 @@ cli.main(function (args, options) {
     var twitStreamsResource = app.resource('streams', twitStreams, { load:twitStreams.load });
     twitStreamsResource.map('post', '/init', twitStreams.init);    // relative path accesses element (/users/1/login)
 
+    var memegen = require('./resources/memegen')
+    var memegenResource = app.resource('memegen', memegen);
+
+
     // Routes
     var socketHandler = new SocketHandler(app)
 
@@ -128,6 +132,7 @@ cli.main(function (args, options) {
 
     });
     app.get('/', routes.index);
+
 
     app.listen(3000);
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
