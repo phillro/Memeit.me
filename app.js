@@ -103,8 +103,11 @@ cli.main(function (args, options) {
 
     //Start up the workers
     //Creates a meme image by searching memegenerator.net a
-    var memeGeneratorFactoryWorker = resque.createWorker ('memegenerator_factory','createMemeGeneratorMeme',require('./lib/workers/memeGeneratorWorker') )
-    memeGeneratorFactoryWorker.start()
+    //var memeGeneratorFactoryWorker = resque.createWorker ('memegenerator_factory','createMemeGeneratorMeme',require('./lib/workers/memeGeneratorWorker') )
+    //memeGeneratorFactoryWorker.start()
+
+    var flickrFactoryWorker = resque.createWorker ('flickr_factory','getFlickrImages',require('./lib/workers/flickrWorker') )
+    flickrFactoryWorker.start()
 
     // trollFactoryWorker publishes finished messages to stream channels
     var trollFactoryWorker = resque.createWorker ('troll_factory','publishMessage',require('./lib/workers/trollStreamWorker') )
