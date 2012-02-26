@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Cardthis Order Form</title>
+    <script src="/javascripts/jquery-1.7.min.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+<script>//var http://www.cardthis.com/cardthisorder/?apikey=  &
+// firstname=Lucas&lastname=Lappin&address1=64%20E%20Sunnyside%20Ln&state=NY&city=Irvington&zip=10533&country=United%20States&msg=wowdoesthiswork&
+// imageurl=http://www.patriotspoint.org/news_events/wp-content/uploads/2010/05/ea-6b_prowler_from_vaq-138.jpg
+</script>
+<style>
+    .form_input_li {
+        width: 375px;
+        list-style-type: none;
+        padding: 5px;
+    }
+
+    .form_input_li label {
+    }
+
+    .form_input_li input {
+        float: right;
+        width: 250px;
+    }
+
+    #place_order {
+        background-color: lightgray;
+        border-width: 1px;
+        border-color: black;
+        border-style: double;
+        width: 85px;
+        text-align: center;
+        float: right;
+        margin-right: 150px;
+    }
+</style>
+<h3>Send them a card!</h3>
+
+
+<div style="width:800px">
+    <div id="meme_preview" style="width:400px;float:left;"></div>
+    <div style="width:400px;float:right;">
+        <form id="cardThisForm">
+            <ul style="width:500px">
+                <li class="form_input_li"><label for="firstname">First Name</label><input type="text" name="firstname"
+                                                                                          id="firstname"></li>
+                <li class="form_input_li"><label for="lastname">Last Name</label><input type="text" name="lastname"
+                                                                                        id="lastname"></li>
+                <li class="form_input_li"><label for="address1">Address Line 1</label><input type="text" name="address1"
+                                                                                             id="address1"></li>
+                <li class="form_input_li"><label for="city">City</label><input type="text" name="city" id="city"></li>
+                <li class="form_input_li"><label for="state">State</label><input type="text" name="state" id="state">
+                </li>
+                <li class="form_input_li"><label for="zip">Zip</label><input type="text" name="zip" id="zip"></li>
+
+                <li class="form_input_li"><label for="country">Country</label>
+                    <input type="text" name="country" id="country" readonly value="United States">
+                </li>
+                <li class="form_input_li"><label for="msg">Message</label><input style="height:150px;" type="textarea"
+                                                                                 name="msg" id="msg"></li>
+                <li class="form_input_li" style="float:right">
+                    <div id="place_order">Place Order</div>
+                </li>
+            </ul>
+        </form>
+        </li>
+        </ul>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var imageUrl = getParameterByName('imageUrl')
+
+        $('#meme_preview').append($('<img>', {
+            src:imageUrl
+        }))
+    })
+    $('#place_order').click(function (ev) {
+        var apiCall = "http://www.cardthis.com/cardthisorder/?apikey=d68c4c7a-8d35-43fd-8e51-b20e2fa32d8f&"
+        apiCall += $('#cardThisForm').serialize()
+        //window.location = apiCall
+        $('#cardThisForm').empty()
+        $('#cardThisForm').append('<div class="confirmation">Your order is being placed!</div>')
+    })
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var results = regex.exec(window.location.search);
+        if (results == null)
+            return "";
+        else
+            return decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+</script>
+
+
+</body>
+</html>

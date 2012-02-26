@@ -1,0 +1,14 @@
+<ul id="streams_list" style="list-style-type: none;background-color: lightGrey;margin-right: 15px;">
+            <% for(var i=0;i
+            <streams.length;i++){ %>
+            <li>
+                <a class="stream_link" id="<%= streams[i]._id%>">
+                    <% for(var t=0;t
+                    <streams
+                    [i].terms.length;t++){ %>
+                    <%=streams[i].terms[t]%>,
+                    <% } %>
+                </a>
+            </li>
+            <% } %>
+        </ul>

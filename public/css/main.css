@@ -39,3 +39,15 @@ body {
 .img_container img {
   width:450px;
   height:300px;
+}
+
+#create_stream {
+       background-color: lightgray;
+       border-width: 1px;
+       border-color: black;
+       border-style: double;
+       width: 120px;
+       text-align: center;
+       float: right;
+       margin-right: 150px;
+   }
