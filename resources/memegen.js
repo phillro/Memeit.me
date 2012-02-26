@@ -2,9 +2,9 @@ var Memefier = require('../lib/memefier')
 var memefier = new Memefier()
 exports.index = function (req, res) {
 
-    var imageSrc = req.query.imageSrc || ''
-    var topText = req.query.topText || ''
-    var bottomText = req.query.bottomText || ''
+    var imageSrc = decodeURIComponent(req.query.imageSrc || '')
+    var topText = decodeURIComponent(req.query.topText || '')
+    var bottomText = decodeURI(req.query.bottomText || '')
     var uid = req.query.uid || (new Date()).getTime().toString()
     var options = {}
     try {
@@ -23,7 +23,7 @@ exports.index = function (req, res) {
             }
             res.send(response)
         } else {
-            res.send(configSettings.baseUrl + ':' + configSettings.port + configSettings.memeUrlPath + '/' + imageSrc)
+            res.send(imageSrc)
         }
     })
 };

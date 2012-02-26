@@ -15,7 +15,7 @@
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
 <div>
-    <div style="float:left">
+    <div style="float:left;">
         <ul id="streams_list" style="list-style-type: none;background-color: lightGrey;margin-right: 15px;">
             <% for(var i=0;i
             <streams.length
@@ -32,14 +32,74 @@
             <% } %>
         </ul>
     </div>
-    <div>
+    <div id="content_div">
         <h3 id="stream_title"></h3>
-        <ul id="stream_content" style="list-style-type: none;">
+        <ul id="stream_content" style="list-style-type: none; width:400px;">
         </ul>
     </div>
 </div>
 
 <script>
+
+    function createImageElement(src, alt, title) {
+
+
+        var img = IEWIN ? new Image() : document.createElement('img');
+        img.src = src;
+        if (alt != null) img.alt = alt;
+        if (title != null) img.title = title;
+        return img;
+    }
+
+    function createMemeImage(data, width, height, callback) {
+        var topText = ''
+        var bottomText = ''
+        //Lets split this up in to top/bottom text
+        if (data.msg.text.length > 50) {
+            var splitChars = ['?', '!', '.', ',', ' ', '@', '#', '"', ';']
+            var i = 40
+            var found = false
+            do {
+                if (splitChars.indexOf(data.msg.text[i]) > -1) {
+                    found = true
+                }
+                i++
+            } while ((i < data.msg.text.length) && (!found))
+            //no obvious splits
+            if (!found) {
+                i = Math.abs(data.msg.text.length / 2)
+            }
+            topText = data.msg.text.substring(0, i)
+            bottomText = data.msg.text.substring(i, data.msg.text.length)
+        } else {
+            topText = data.msg.text
+        }
+        topText = encodeURIComponent(topText)
+        bottomText = encodeURIComponent(bottomText)
+        var memeImageUrl = 'http://localhost:3000/memegen?width=' + width + '&height=' + height + '&topText=' + topText + '&bottomText=' + bottomText + '&imageSrc=' + encodeURIComponent('http://i3.kym-cdn.com/photos/images/newsfeed/000/258/290/2fe.png')
+        $.get(memeImageUrl, function (imageUrl) {
+            if (typeof imageUrl == 'string') {
+                callback($('<img>', {
+                    src:imageUrl,
+                    width:width,
+                    height:height,
+                    alt:data.text,
+                    title:memeImageUrl
+                })
+                )
+            }
+        });
+    }
+
+    function insertElement(selector, element) {
+        if ($(selector).length > 0) {
+            $(selector).closest('ul').children(':first').before('<li />').append(element);
+        } else {
+            $(selector).append(element)
+        }
+    }
+
+
     $(document).ready(function () {
         $(document).socketEventHandler({host:'<%=app.configSettings.baseUrl%>:<%=app.configSettings.socketPort%>/'})
         $(document).bind('addTweet', function (event, data) {
@@ -48,27 +108,46 @@
                     data.msg = JSON.parse(data.msg)
                 }
             }
-            var content = '<b><i>-' + data.msg.user.screen_name + '</i></b>'
-            var thumbNailList = ''
-            if (data.msg.trollMeImages) {
-                var images = data.msg.trollMeImages
-                if (images.length > 0) {
-                    for (var i = 0; i < images.length; i++) {
-                        thumbNailList += '<li class="troll_thumbnail_li"><img class="troll_thumbnail" src="' + images[i].imageUrl + '"</img></li>'
-                    }
-                    thumbNailList='<ul>'+thumbNailList+'</ul>'
-                    content += '<img src="' + images[0].imageUrl + '"</img>'+thumbNailList
-                }
-            }
-            if($('#stream_content li').length>0){
-                $('#stream_content').closest('ul').children(':first').before('<li />').append(content);
-            }else{
-                $('#stream_content').append(content)
-            }
+            var content = '<li id="tweet_' + data.msg.id + '" style="margin-bottom: 25px">' + data.msg.text + '<br><b><i>-' + data.msg.user.screen_name + '</i></b></li>'
+            $('#stream_content').append(content)
+            $('#tweet_' + data.msg.id).append($('<a>', {
+                class:'troll_tweet_link',
+                id:'troll_tweet_link_' + data.msg.id
+            }).text('Trollme'))
+            $('#troll_tweet_link_' + data.msg.id).data('data', data)
+            $('#troll_tweet_link_' + data.msg.id).click(function (ev) {
+                var msg = $(this).data('data')
+                createMemeImage(data,400,400,function(imageElement){
+                    $('#tweet_' + data.msg.id).empty()
+                    $('#tweet_' + data.msg.id).append(imageElement)
+                    $('#tweet_' + data.msg.id).append('<br><b><i>-' + data.msg.user.screen_name + '</i></b>')
+                })
+            })
+
+
+            /*if (data.msg.trollMeImages) {
+             var images = data.msg.trollMeImages
+             //Do the first image as the main one
+
+             if (images.length > 0) {
+             //Do one the first image as the main one
+             createMemeImage(data, 400, 400, function (imageElement) {
+             var liElement = $('<li>', {id:"tweet_" + data.msg.id}).append(imageElement)
+
+             //THIS REQUIRES AN EMPTY LI IN THE #stream_content UL. I have no idea why.
+             if ($('#stream_content').length > 0) {
+             $('#stream_content').closest('ul').children(':first').before('<li/>').append(imageElement);
+             } else {
+             $('#stream_content').append('<li> </li>')
+             $('#stream_content').append(imageElement)
+             }
+             })
+             }
 
 
 
-            //$("#stream_content").append('<li class="stream_content_entry">' + data.msg.text + '<br><b><i>-' + data.msg.user.screen_name + '</i></b></li>');
+
+             }*/
         })
 
     })
@@ -76,7 +155,7 @@
     $('.stream_link').click(function (ev) {
         $("#stream_content").empty();
         $('#stream_content').memeStreams('followStream', {streamId:this.id, options:{}});
-        $('#stream_title').text('Viewing Stream : ' + $('#' + this.id).text())
+        $('#stream_title').text('Viewing Stream : [' + $('#' + this.id).text() + ']')
     })
 
 

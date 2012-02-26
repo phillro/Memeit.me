@@ -34,6 +34,11 @@ module.exports = function (app) {
 
 
         })
+        .on('error',function(err){
+            if(err){
+                console.log('socket.io blocked? '+err)
+            }
+        })
 
     //return streamHandler
 
