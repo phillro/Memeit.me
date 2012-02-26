@@ -127,7 +127,7 @@
           $("#"+that.msg.id+' .img_container').empty().append("Loading Trollmeme...");
           createMemeImage(that, that.msg.trollMeImages[index].imageUrl, 450,300, function(data) {
             $('#'+that.msg.id+' .img_container').empty().append(data);
-            $('#link_'+that.msg.id).href = "http://twitter.com/home?status=%7B%7Bsome";
+            $('#link_'+that.msg.id).href = "http://twitter.com/home?status="+encodeURIComponent(that.msg.trollMeImages[index].imageUrl);
           })
         });
       }
