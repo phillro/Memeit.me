@@ -3,8 +3,8 @@ var memefier = new Memefier()
 exports.index = function (req, res) {
 
     var imageSrc = req.query.imageSrc || ''
-    var imageTxt1 = req.query.txt1 || ''
-    var imageTxt2 = req.query.txt1 || undefined
+    var topText = req.query.topText || ''
+    var bottomText = req.query.bottomText || ''
     var uid = req.query.uid || (new Date()).getTime().toString()
     var options = {}
     try {
@@ -13,7 +13,7 @@ exports.index = function (req, res) {
         if (req.query.height)
             options.height = parseInt(req.query.height)
     }catch(ex){}
-    memefier.makeMeme(imageSrc, imageTxt1, imageTxt2, uid, options, function (err, imageSrc) {
+    memefier.makeMeme(imageSrc, topText, bottomText, uid, options, function (err, imageSrc) {
         var response = {success:false}
         if (err) {
             if (imageSrc) {
