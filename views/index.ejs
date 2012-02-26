@@ -23,8 +23,9 @@
             <li>
                 <a class="stream_link" id="<%= streams[i]._id%>">
                     <% for(var t=0;t
-                    <streams[i].terms.length;t++){ %>
-                        <%=streams[i].terms[t]%>,
+                    <streams
+                    [i].terms.length;t++){ %>
+                    <%=streams[i].terms[t]%>,
                     <% } %>
                 </a>
             </li>
@@ -39,7 +40,7 @@
 </div>
 
 <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
-<a class="addthis_button_cardthis"></a>
+    <a class="addthis_button_cardthis"></a>
 </div>
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js"></script>
 
@@ -103,8 +104,19 @@
         }
     }
 
-    function cardThisElementString(){
+    function tweetThisString(data, memeImageUrl) {
+        var screen_name
+        var tweetBody =  ''
+        if (data.msg.user.screen_name) {
+            tweetBody += ' @' + data.msg.user.screen_name
+        }
+        tweetBody += ' '+memeImageUrl
+        tweetBody += ' #meme_troll'
+        var url = "http://twitter.com/home?status=" + tweetBody
+        return url
+    }
 
+    function cardThisElementString() {
 
 
         return elementString
@@ -121,19 +133,24 @@
             var content = '<li id="tweet_' + data.msg.id + '" style="margin-bottom: 25px">' + data.msg.text + '<br><b><i>-' + data.msg.user.screen_name + '</i></b></li>'
             $('#stream_content').append(content)
             if (data.msg.trollMeImages.length > 0) {
-            $('#tweet_' + data.msg.id).append($('<a>', {
-                class:'troll_tweet_link',
-                id:'troll_tweet_link_' + data.msg.id
-            }).text('Trollme'))
-            $('#troll_tweet_link_' + data.msg.id).data('data', data)
-            $('#troll_tweet_link_' + data.msg.id).click(function (ev) {
-                var msg = $(this).data('data')
-                createMemeImage(data,400,400,function(imageElement){
-                    $('#tweet_' + data.msg.id).empty()
-                    $('#tweet_' + data.msg.id).append(imageElement)
-                    $('#tweet_' + data.msg.id).append('<br><b><i>-' + data.msg.user.screen_name + '</i></b>')
+                $('#tweet_' + data.msg.id).append($('<a>', {
+                    class:'troll_tweet_link',
+                    id:'troll_tweet_link_' + data.msg.id
+                }).text('Trollme'))
+                $('#troll_tweet_link_' + data.msg.id).data('data', data)
+                $('#troll_tweet_link_' + data.msg.id).click(function (ev) {
+                    var msg = $(this).data('data')
+                    createMemeImage(data, 400, 400, function (imageElement) {
+                        $('#tweet_' + data.msg.id).empty()
+                        $('#tweet_' + data.msg.id).append(imageElement)
+                        var memeImageSrc = $(imageElement).attr('src')
+                        var tweetThisLink = tweetThisString(data, memeImageSrc)
+                        $('#tweet_' + data.msg.id).append('<br><b><i>-' + data.msg.user.screen_name + '</i> </b>')
+                        $('#tweet_' + data.msg.id).append('  <a target="_blank" href="'+tweetThisLink+'">Tweet This</a>')
+                        
+                            
+                    })
                 })
-            })
             }
 
 
