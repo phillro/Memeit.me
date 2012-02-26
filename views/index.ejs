@@ -34,7 +34,6 @@
 
     function createImageElement(src, alt, title) {
 
-
         var img = IEWIN ? new Image() : document.createElement('img');
         img.src = src;
         if (alt != null) img.alt = alt;
@@ -42,7 +41,7 @@
         return img;
     }
 
-    function createMemeImage(data, width, height, callback) {
+    function createMemeImage(data, imgUrl, width, height, callback) {
         var topText = ''
         var bottomText = ''
         //Lets split this up in to top/bottom text
@@ -67,7 +66,7 @@
         }
         topText = encodeURIComponent(topText)
         bottomText = encodeURIComponent(bottomText)
-        var memeImageUrl = 'http://localhost:3000/memegen?width=' + width + '&height=' + height + '&topText=' + topText + '&bottomText=' + bottomText + '&imageSrc=' + encodeURIComponent('http://i3.kym-cdn.com/photos/images/newsfeed/000/258/290/2fe.png')
+        var memeImageUrl = 'http://localhost:3000/memegen?width=' + width + '&height=' + height + '&topText=' + topText + '&bottomText=' + bottomText + '&imageSrc=' + encodeURIComponent(imgUrl)
         $.get(memeImageUrl, function (imageUrl) {
             if (typeof imageUrl == 'string') {
                 callback($('<img>', {
@@ -91,8 +90,10 @@
    }
 
    function selectThumb (e) {
+
      $('#'+e.getAttribute("parent_id")+' .img_container').empty().append(
      '<img src="'+e.src+'">');
+
    }
 
 
@@ -109,18 +110,27 @@
     }
 
     function createGalleryView(data) { 
-      content = [];
-      content.push('<div class="item" id="'+data.msg.id+'">');
-      content.push('<h3>'+data.msg.text+'</h3>');
-      content.push('<div class="img_container"></div>');
-      content.push('<a href="">Troll Em\'</a>');  
-      content.push('</div>');
+      var content = [];
+      $("#container").append('<div class="item" id="'+data.msg.id+'">'+ 
+        '<h3>'+data.msg.text+'</h3>'+
+        '<div class="img_container"></div>'+
+        '<a id="link_'+data.msg.id+'">Troll Em\'</a>'+  
+        '</div>');
       for (i in data.msg.trollMeImages) {
-        content.push('<div class="item thumb">')
-        content.push('<img onclick="selectThumb(this)" parent_id="'+data.msg.id+'" src="'+data.msg.trollMeImages[i].imageUrl+'">');
-        content.push('</div>');
+        $("#container").append(
+          '<div id="img'+i+'_'+data.msg.id+'" class="item thumb">'+
+          '<img parent_id="'+data.msg.id+'" src="'+data.msg.trollMeImages[i].imageUrl+'">'+
+          '</div>');
+        var index = i;
+        var that = data;
+        $('#img'+i+'_'+data.msg.id).click(function(ev) {
+          $("#"+that.msg.id+' .img_container').empty().append("Loading Trollmeme...");
+          createMemeImage(that, that.msg.trollMeImages[index].imageUrl, 450,300, function(data) {
+            $('#'+that.msg.id+' .img_container').empty().append(data);
+            $('#link_'+that.msg.id).href = "http://twitter.com/home?status=%7B%7Bsome";
+          })
+        });
       }
-      return content.join('');
     }
 
 
@@ -159,7 +169,7 @@
               if (tmis.lenght ==1) {
                 $("#container").append(createSingleView(data));
               } else {
-                $("#container").append(createGalleryView(data));
+                createGalleryView(data);
               }
             }
             
