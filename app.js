@@ -56,6 +56,7 @@ cli.main(function (args, options) {
         app.use(express.bodyParser());
         var RedisStore = require('connect-redis')(express);
         app.use(express.cookieParser());
+        console.log(app.configSettings);
         //app.use(express.session({ secret:"keyboard cat", store:new RedisStore }));
         app.use(express.session({store:sessionStore, secret:app.configSettings.sessionSecret }));
         app.use(express.methodOverride());

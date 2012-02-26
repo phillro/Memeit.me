@@ -16,6 +16,10 @@
     , "connect-redis":">=0.0.1"
     , "ntwitter":">0.0.1"
     , "node-schedule":">0.0.1"
+    , "redis":">0.0.1"
+    , "connect":">0.0.1"
     , "canvas":">0.0.1"
+    , "ejs":">0.0.1"
+    , "imagemagick":">0.0.1"
   }
 }

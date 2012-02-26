@@ -1,17 +1,3 @@
-<style>
-    .stream_content_entry {
-        margin-bottom: 10px;
-    }
-
-    .troll_thumbnail {
-        height: 25px;
-        width: 25px;
-    }
-
-    .troll_thumbnail_li {
-        float: left
-    }
-</style>
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
 <div>
@@ -32,17 +18,17 @@
             <% } %>
         </ul>
     </div>
+
     <div id="content_div">
         <h3 id="stream_title"></h3>
         <ul id="stream_content" style="list-style-type: none; width:400px;">
         </ul>
-    </div>
-</div>
+      </div>
 
-<div class="addthis_toolbox addthis_default_style addthis_32x32_style">
-    <a class="addthis_button_cardthis"></a>
+   <div id="container">
+   
+   </div>
 </div>
-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js"></script>
 
 <script>
 
@@ -65,7 +51,7 @@
             var i = 40
             var found = false
             do {
-                if (splitChars.indexOf(data.msg.text.charAt(i)) > -1) {
+                if (splitChars.indexOf(data.msg.text[i]) > -1) {
                     found = true
                 }
                 i++
@@ -81,7 +67,7 @@
         }
         topText = encodeURIComponent(topText)
         bottomText = encodeURIComponent(bottomText)
-        var memeImageUrl = 'http://localhost:3000/memegen?width=' + width + '&height=' + height + '&topText=' + topText + '&bottomText=' + bottomText + '&imageSrc=' + encodeURIComponent(data.msg.trollMeImages[0].imageUrl)
+        var memeImageUrl = 'http://localhost:3000/memegen?width=' + width + '&height=' + height + '&topText=' + topText + '&bottomText=' + bottomText + '&imageSrc=' + encodeURIComponent('http://i3.kym-cdn.com/photos/images/newsfeed/000/258/290/2fe.png')
         $.get(memeImageUrl, function (imageUrl) {
             if (typeof imageUrl == 'string') {
                 callback($('<img>', {
@@ -102,25 +88,44 @@
         } else {
             $(selector).append(element)
         }
+   }
+
+   function selectThumb (e) {
+     $('#'+e.getAttribute("parent_id")+' .img_container').empty().append(
+     '<img src="'+e.src+'">');
+   }
+
+
+
+
+    function createSingleView(data) {
+      content = [];
+      content.push('<div class="item">');
+      content.push('<h3>'+data.msg.text+'</h3>')
+      content.push('<img src="'+data.msg.trollMeImages[0].imageUrl+'" >');
+      content.push('<a href="">Troll Em\'</a>');
+      content.push('</div>');
+      return content.join('');
     }
 
-    function tweetThisString(data, memeImageUrl) {
-        var screen_name
-        var tweetBody =  ''
-        if (data.msg.user.screen_name) {
-            tweetBody += ' @' + data.msg.user.screen_name
-        }
-        tweetBody += ' '+memeImageUrl
-        tweetBody += ' #meme_troll'
-        var url = "http://twitter.com/home?status=" + tweetBody
-        return url
+    function createGalleryView(data) { 
+      content = [];
+      content.push('<div class="item" id="'+data.msg.id+'">');
+      content.push('<h3>'+data.msg.text+'</h3>');
+      content.push('<div class="img_container"></div>');
+      content.push('<a href="">Troll Em\'</a>');  
+      content.push('</div>');
+      for (i in data.msg.trollMeImages) {
+        content.push('<div class="item thumb">')
+        content.push('<img onclick="selectThumb(this)" parent_id="'+data.msg.id+'" src="'+data.msg.trollMeImages[i].imageUrl+'">');
+        content.push('</div>');
+      }
+      return content.join('');
     }
 
-    function cardThisElementString() {
 
 
-        return elementString
-    }
+
 
     $(document).ready(function () {
         $(document).socketEventHandler({host:'<%=app.configSettings.baseUrl%>:<%=app.configSettings.socketPort%>/'})
@@ -129,30 +134,35 @@
                 if (typeof data.msg == 'string') {
                     data.msg = JSON.parse(data.msg)
                 }
-            }
+            }/*
             var content = '<li id="tweet_' + data.msg.id + '" style="margin-bottom: 25px">' + data.msg.text + '<br><b><i>-' + data.msg.user.screen_name + '</i></b></li>'
             $('#stream_content').append(content)
-            if (data.msg.trollMeImages.length > 0) {
-                $('#tweet_' + data.msg.id).append($('<a>', {
-                    class:'troll_tweet_link',
-                    id:'troll_tweet_link_' + data.msg.id
-                }).text('Trollme'))
-                $('#troll_tweet_link_' + data.msg.id).data('data', data)
-                $('#troll_tweet_link_' + data.msg.id).click(function (ev) {
-                    var msg = $(this).data('data')
-                    createMemeImage(data, 400, 400, function (imageElement) {
-                        $('#tweet_' + data.msg.id).empty()
-                        $('#tweet_' + data.msg.id).append(imageElement)
-                        var memeImageSrc = $(imageElement).attr('src')
-                        var tweetThisLink = tweetThisString(data, memeImageSrc)
-                        $('#tweet_' + data.msg.id).append('<br><b><i>-' + data.msg.user.screen_name + '</i> </b>')
-                        $('#tweet_' + data.msg.id).append('  <a target="_blank" href="'+tweetThisLink+'">Tweet This</a>')
-                        
-                            
-                    })
+            $('#tweet_' + data.msg.id).append($('<a>', {
+                class:'troll_tweet_link',
+                id:'troll_tweet_link_' + data.msg.id
+            }).text('Trollme'))
+            $('#troll_tweet_link_' + data.msg.id).data('data', data)
+            $('#troll_tweet_link_' + data.msg.id).click(function (ev) {
+                var msg = $(this).data('data')
+                createMemeImage(data,400,400,function(imageElement){
+                    $('#tweet_' + data.msg.id).empty()
+                    $('#tweet_' + data.msg.id).append(imageElement)
+                    $('#tweet_' + data.msg.id).append('<br><b><i>-' + data.msg.user.screen_name + '</i></b>')
                 })
-            }
+            }) */
 
+            //$("#container").append('<div class="item">content</div>');
+
+            var tmis = data.msg.trollMeImages;
+            if (tmis) {
+              //if we have 1 tmi put it in the main view
+              if (tmis.lenght ==1) {
+                $("#container").append(createSingleView(data));
+              } else {
+                $("#container").append(createGalleryView(data));
+              }
+            }
+            
 
             /*if (data.msg.trollMeImages) {
              var images = data.msg.trollMeImages

@@ -14,6 +14,7 @@ body {
 
 .item {
   padding:10px;
+  width:700px;
   margin:5px;
   float:left;
   background-color:red;
@@ -31,3 +32,10 @@ body {
   border-radius: 10px;
   margin:5px;
 }
+.thumb img {
+  width:75px;
+  height:75px;
+}
+.img_container img {
+  width:450px;
+  height:300px;

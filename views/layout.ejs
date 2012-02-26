@@ -3,10 +3,13 @@
 <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link rel='stylesheet' href='/css/main.css'/>
+    <link href='http://fonts.googleapis.com/css?family=Signika+Negative:400,700' rel='stylesheet' type='text/css'>
     <script src="/javascripts/jquery-1.7.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/javascripts/jquery-socket-event-handler.js" type="text/javascript" charset="utf-8"></script>
     <script src="/javascripts/jquery-meme-streams.js" type="text/javascript" charset="utf-8"></script>
+    <script src="javascripts/jquery.masonry.min.js"></script>
 </head>
 <body>
 
@@ -14,6 +17,13 @@
 <script>
     $(document).ready(function(){
 
+          var $container = $('#container');
+          $container.imagesLoaded(function(){
+            $container.masonry({
+              itemSelector : '.item',
+              columnWidth : 40
+            });
+          });
 
     })
 
