@@ -23,9 +23,8 @@
             <li>
                 <a class="stream_link" id="<%= streams[i]._id%>">
                     <% for(var t=0;t
-                    <streams
-                    [i].terms.length;t++){ %>
-                    <%=streams[i].terms[t]%>,
+                    <streams[i].terms.length;t++){ %>
+                        <%=streams[i].terms[t]%>,
                     <% } %>
                 </a>
             </li>
