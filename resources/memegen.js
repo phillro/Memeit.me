@@ -3,7 +3,7 @@
  * Query Params: topText, bottomText, imageSrc
  * Returns a url to the generated meme
  * See lib/memefier.js for the actual meme generator
- * /
+ **/
 var Memefier = require('../lib/memefier')
 var memefier = new Memefier()
 exports.index = function (req, res) {
