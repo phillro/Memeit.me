@@ -1,0 +1,14 @@
+Memeit.me is a twitter meme generator originally developed for Photohack Day 2 in NYC on 02/26/2012
+
+
+It provides the following:
+
+(1) Twitter stream integration
+(2) Searches flickr for images that may be related to the incoming tweets
+(3) A meme generation web service
+(4) A plugable worker architecture that allows for additional post processing
+of tweets so that one can easily add other image services and text translators
+
+Requires: imagemagick, cairo, a redis server and a mongo server.
+
+
