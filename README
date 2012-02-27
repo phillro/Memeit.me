@@ -10,5 +10,5 @@ It provides the following:
 of tweets so that one can easily add other image services and text translators
 
 Requires: imagemagick, cairo, a redis server and a mongo server.
-
+Modified Knox S3 client that supports writing a PNG stream. Its in lib and shouldn't be.
 
